@@ -4,7 +4,7 @@
 #
 Name     : dogpile.core
 Version  : 0.4.1
-Release  : 17
+Release  : 18
 URL      : https://pypi.python.org/packages/source/d/dogpile.core/dogpile.core-0.4.1.tar.gz
 Source0  : https://pypi.python.org/packages/source/d/dogpile.core/dogpile.core-0.4.1.tar.gz
 Summary  : A 'dogpile' lock, typically used as a component of a larger caching solution
