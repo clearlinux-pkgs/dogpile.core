@@ -6,22 +6,18 @@
 #
 Name     : dogpile.core
 Version  : 0.4.1
-Release  : 24
+Release  : 25
 URL      : https://files.pythonhosted.org/packages/0e/77/e72abc04c22aedf874301861e5c1e761231c288b5de369c18be8f4b5c9bb/dogpile.core-0.4.1.tar.gz
 Source0  : https://files.pythonhosted.org/packages/0e/77/e72abc04c22aedf874301861e5c1e761231c288b5de369c18be8f4b5c9bb/dogpile.core-0.4.1.tar.gz
-Source99 : https://files.pythonhosted.org/packages/0e/77/e72abc04c22aedf874301861e5c1e761231c288b5de369c18be8f4b5c9bb/dogpile.core-0.4.1.tar.gz.asc
+Source1  : https://files.pythonhosted.org/packages/0e/77/e72abc04c22aedf874301861e5c1e761231c288b5de369c18be8f4b5c9bb/dogpile.core-0.4.1.tar.gz.asc
 Summary  : A 'dogpile' lock, typically used as a component of a larger caching solution
 Group    : Development/Tools
 License  : BSD-3-Clause
-Requires: dogpile.core-python3
-Requires: dogpile.core-license
-Requires: dogpile.core-python
+Requires: dogpile.core-license = %{version}-%{release}
+Requires: dogpile.core-python = %{version}-%{release}
+Requires: dogpile.core-python3 = %{version}-%{release}
 BuildRequires : buildreq-distutils3
 BuildRequires : nose
-BuildRequires : pbr
-BuildRequires : pip
-BuildRequires : python3-dev
-BuildRequires : setuptools
 
 %description
 ============
@@ -47,7 +43,7 @@ license components for the dogpile.core package.
 %package python
 Summary: python components for the dogpile.core package.
 Group: Default
-Requires: dogpile.core-python3
+Requires: dogpile.core-python3 = %{version}-%{release}
 
 %description python
 python components for the dogpile.core package.
@@ -64,25 +60,33 @@ python3 components for the dogpile.core package.
 
 %prep
 %setup -q -n dogpile.core-0.4.1
+cd %{_builddir}/dogpile.core-0.4.1
 
 %build
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-export LANG=C
-export SOURCE_DATE_EPOCH=1532378514
-python3 setup.py build -b py3
+export LANG=C.UTF-8
+export SOURCE_DATE_EPOCH=1576009713
+export GCC_IGNORE_WERROR=1
+export CFLAGS="$CFLAGS -fno-lto "
+export FCFLAGS="$CFLAGS -fno-lto "
+export FFLAGS="$CFLAGS -fno-lto "
+export CXXFLAGS="$CXXFLAGS -fno-lto "
+export MAKEFLAGS=%{?_smp_mflags}
+python3 setup.py build
 
 %check
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
-PYTHONPATH=%{buildroot}/usr/lib/python3.7/site-packages python3 setup.py test || :
+PYTHONPATH=%{buildroot}$(python -c "import sys; print(sys.path[-1])") python setup.py test || :
 %install
+export MAKEFLAGS=%{?_smp_mflags}
 rm -rf %{buildroot}
-mkdir -p %{buildroot}/usr/share/doc/dogpile.core
-cp LICENSE %{buildroot}/usr/share/doc/dogpile.core/LICENSE
-python3 -tt setup.py build -b py3 install --root=%{buildroot}
+mkdir -p %{buildroot}/usr/share/package-licenses/dogpile.core
+cp %{_builddir}/dogpile.core-0.4.1/LICENSE %{buildroot}/usr/share/package-licenses/dogpile.core/dc2520972827d61494a3232ceec5b43d9f795e35
+python3 -tt setup.py build  install --root=%{buildroot}
 echo ----[ mark ]----
 cat %{buildroot}/usr/lib/python3*/site-packages/*/requires.txt || :
 echo ----[ mark ]----
@@ -91,8 +95,8 @@ echo ----[ mark ]----
 %defattr(-,root,root,-)
 
 %files license
-%defattr(-,root,root,-)
-/usr/share/doc/dogpile.core/LICENSE
+%defattr(0644,root,root,0755)
+/usr/share/package-licenses/dogpile.core/dc2520972827d61494a3232ceec5b43d9f795e35
 
 %files python
 %defattr(-,root,root,-)
